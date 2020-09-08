@@ -24,7 +24,9 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         'about',
         'username',
         'available_to_hire',
-        'formatted_address'
+        'formatted_address',
+        'image',
+        'profile_image'
     ];
     protected $spatialFields = [
         'location',
@@ -73,6 +75,65 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
     {
         $this->notify(new ResetPassword($token));
     }
+
+    public function designs() {
+
+        return $this->hasMany(Design::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // Teams the user belongs to
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class)
+                    ->withTimestamps();
+    }
+
+    public function ownedTeams()
+    {
+        return $this->teams()
+                    ->where('owner_id',$this->id);
+    }
+
+    public function isOwnerOfTeam($team)
+    {
+        return (bool)$this->teams()
+                    ->where('id',$team->id)
+                    ->where('owner_id',$this->id)
+                    ->count();
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class,'recipient_email','email');
+    }
+
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class,'participants');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function getChatWIthUser($user_id)
+    {
+        $chat = $this->chats()
+                     ->whereHas('participants',function ($query) use ($user_id)
+                      {
+                          $query->where('user_id',$user_id);
+                      })->first();
+
+        return $chat;
+
+    }
+
 
 
 }

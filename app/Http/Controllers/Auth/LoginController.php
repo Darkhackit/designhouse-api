@@ -77,7 +77,7 @@ class LoginController extends Controller
             return response()->json(["errors" => [
 
                 "verification" => "You need to verify your email address"
-            ]]);
+            ]],422);
         }
 
         throw ValidationException::withMessages([

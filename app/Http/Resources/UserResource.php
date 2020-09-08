@@ -17,8 +17,13 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'username' => $this->username,
-            'email' => $this->email,
+            $this->mergeWhen(auth()->check() && auth()->id() == $this->id,[
+
+                'email' => $this->email
+            ])
+           ,
             'name' => $this->name,
+            'designs' => DesignResource::collection($this->whenLoaded('designs')),
             'created_date' => [
                 'created_at_human' => $this->created_at->diffForHumans(),
                 'created_at' => $this->created_at
@@ -28,6 +33,8 @@ class UserResource extends JsonResource
             'about' => $this->about,
             'location' => $this->location,
             'available_to_hire' => $this->available_to_hire,
+            'image' => $this->image,
+            'profile_image' => $this->profile_image
         ];
     }
 }

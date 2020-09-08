@@ -52,9 +52,9 @@ class VerificationController extends Controller
 
         if(! URL::hasValidSignature($request)) {
 
-            return response()->json(['error' => [
+            return response()->json(['errors' => [
 
-                'message' => "Invalid Verification Link"
+                'message' => "Invalid Verification Link or Signature"
             ]],422);
         }
 
@@ -96,7 +96,7 @@ class VerificationController extends Controller
 
         if($user->hasVerifiedEmail()) {
 
-            return response()->json(['error' => [
+            return response()->json(['errors' => [
 
                 'message' => "Email address already verified"
             ]],422);
